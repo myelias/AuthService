@@ -28,6 +28,8 @@ public class UserService : IUserService
         var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
         if (result == PasswordVerificationResult.Success)
         {
+            user.LastLogin = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
             return user;
         }
 

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthService.Models;
 using AuthService.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AuthService.Controllers
 {
@@ -44,6 +45,7 @@ namespace AuthService.Controllers
             }
         }
         
+        [Authorize]
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserById(Guid userId)
         {
@@ -64,6 +66,26 @@ namespace AuthService.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto user)
+        {
+            try
+            {
+                var fetchedUser = await _userService.ValidateCredentialsAsync(user.username, user.password);
+
+                if (fetchedUser == null)
+                    return Unauthorized("Invalid Credentials");
+
+
+                var token = _jwtTokenService.GenerateToken(fetchedUser);
+                return Ok(new {token});
+            }
+            catch (System.Exception)
+            {
+                return StatusCode(500, "An unexpected error occurred");;
             }
         }
 

@@ -28,5 +28,7 @@ namespace AuthService.Models
         public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
 
         public DateTime LastLogin { get; set; } = DateTime.UtcNow;
+
+        public string jwt {get; set;} = string.Empty;
     }
 }
